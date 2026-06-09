@@ -34,3 +34,6 @@ Some of our results are:
 <img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
 <img width="2370" height="1466" alt="throughput_comparison" src="https://github.com/user-attachments/assets/ee1612ab-fd6e-4b94-bd3d-14d77f85311d" />
 <img width="2370" height="1466" alt="throughput_speedup_vs_fp16" src="https://github.com/user-attachments/assets/0a23ecf2-8970-49b0-90d3-4b600c9a04f3" />
+<img width="711" height="511" alt="Screenshot 2026-06-09 at 9 55 16 AM" src="https://github.com/user-attachments/assets/09e296fd-1d60-40fb-ac94-b9cd161a9d3c" />
+<img width="913" height="321" alt="Screenshot 2026-06-09 at 9 53 35 AM" src="https://github.com/user-attachments/assets/923be551-e4e9-4c59-9d33-52352a4be17a" />
+
