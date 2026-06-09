@@ -28,6 +28,7 @@ demonstrate the importance of co-design when deploying LLMs
 on resource-constrained hardware.
 
 ### What's the actual contribution? This is benchmarking, not a new method.
+
 It's a characterization study, and the contribution is the empirical lesson: the common intuition 
 that "quantization is a free speedup" is wrong. Naive INT8 was the worst option on every axis; the win came 
 from matching kernels to hardware, not from fewer bits. That's a co-design result.
@@ -36,12 +37,14 @@ from matching kernels to hardware, not from fewer bits. That's a co-design resul
 
 <img width="2370" height="1466" alt="throughput_comparison" src="https://github.com/user-attachments/assets/ee1612ab-fd6e-4b94-bd3d-14d77f85311d" />
 ### Why is INT8 slower than FP16?
+
 Because the INT8 path uses a general-purpose mixed-precision kernel. It extracts outlier features into FP16, 
 quantizes the rest, runs the matmul, then dequantizes, all at runtime. That overhead dominates, and the kernel isn't tuned 
 for small-batch autoregressive decode. The format can be fast on A100 tensor cores in principle; the LLM.int8() library just isn't optimized for inference speed 
 — it's built to fit large models in memory. AWQ, by contrast, ships fused kernels written for exactly this workload. 
 
 ### Then why is AWQ-INT4 only ~5–7% faster than FP16, not 4x?
+
 Because at these batch sizes, decode is memory-bandwidth-bound, not compute-bound — 
 you generate one token at a time, so the bottleneck is loading the weights, not the math. 
 AWQ cuts weight memory traffic ~4x, which is why it edges ahead. But everything else — attention, the KV-cache, framework overhead — doesn't shrink, 
@@ -54,6 +57,7 @@ so the net speedup is modest. It's an Amdahl's-law ceiling: you only sped up the
 <img width="590" height="390" alt="perplexity" src="https://github.com/user-attachments/assets/409fd82b-2866-4a43-b71f-3a204bd20467" />
 <img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
 ### "How did you measure power, and what does 'dynamic watt' mean?" 
+
 Power was sampled from the GPU's onboard sensor via NVML (NVIDIA Management Library) — the same source nvidia-smi --query-gpu=power.draw exposes, 
 accessible programmatically through pynvml.nvmlDeviceGetPowerUsage(), which returns instantaneous board power. 
 During each inference run, a background sampler polls this value at a fixed interval and the readings are averaged over the run to produce average power (W).
@@ -61,6 +65,7 @@ During each inference run, a background sampler polls this value at a fixed inte
 
 <img width="913" height="321" alt="Screenshot 2026-06-09 at 9 53 35 AM" src="https://github.com/user-attachments/assets/923be551-e4e9-4c59-9d33-52352a4be17a" />
 ### why does INT4 weights speed things up but INT4 KV-cache slows things down?
+
 Quantizing weights cuts the dominant cost (loading weights every step). Quantizing the KV-cache adds a per-step dequant on a comparatively small structure, 
 so at these context lengths the overhead outweighs the bandwidth saved. It only pays off at very long contexts where the cache itself becomes the memory bottleneck.
 
