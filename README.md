@@ -36,6 +36,7 @@ from matching kernels to hardware, not from fewer bits. That's a co-design resul
 #### Some of our results are:
 
 <img width="2370" height="1466" alt="throughput_comparison" src="https://github.com/user-attachments/assets/ee1612ab-fd6e-4b94-bd3d-14d77f85311d" />
+
 ### Why is INT8 slower than FP16?
 
 Because the INT8 path uses a general-purpose mixed-precision kernel. It extracts outlier features into FP16, 
@@ -56,6 +57,7 @@ so the net speedup is modest. It's an Amdahl's-law ceiling: you only sped up the
 <img width="2370" height="1466" alt="memory_comparison" src="https://github.com/user-attachments/assets/c3df47f9-944d-4efd-9039-97fe76ad66d5" />
 <img width="590" height="390" alt="perplexity" src="https://github.com/user-attachments/assets/409fd82b-2866-4a43-b71f-3a204bd20467" />
 <img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
+
 ### "How did you measure power, and what does 'dynamic watt' mean?" 
 
 Power was sampled from the GPU's onboard sensor via NVML (NVIDIA Management Library) — the same source nvidia-smi --query-gpu=power.draw exposes, 
@@ -64,6 +66,7 @@ During each inference run, a background sampler polls this value at a fixed inte
 "Dynamic watt" is the average power during inference minus the idle baseline — the power the GPU draws when it's sitting with the model resident but not actively computing. Subtracting it isolates the marginal power cost of the computation itself and removes the static overhead (leakage, memory refresh, idle clock domains) that every method pays equally. 
 
 <img width="913" height="321" alt="Screenshot 2026-06-09 at 9 53 35 AM" src="https://github.com/user-attachments/assets/923be551-e4e9-4c59-9d33-52352a4be17a" />
+
 ### why does INT4 weights speed things up but INT4 KV-cache slows things down?
 
 Quantizing weights cuts the dominant cost (loading weights every step). Quantizing the KV-cache adds a per-step dequant on a comparatively small structure, 
