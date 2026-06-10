@@ -72,6 +72,11 @@ During each inference run, a background sampler polls this value at a fixed inte
 Quantizing weights cuts the dominant cost (loading weights every step). Quantizing the KV-cache adds a per-step dequant on a comparatively small structure, 
 so at these context lengths the overhead outweighs the bandwidth saved. It only pays off at very long contexts where the cache itself becomes the memory bottleneck.
 
+### Why does decode throughput stay nearly flat at short prompt lengths and fall off only at long context, instead of decreasing steadily?
+Decode throughput is not expected to scale linearly with prompt length. The per-token cost of autoregressive generation has two components: a fixed cost from the forward pass through the model weights, which is independent of sequence length, and an attention cost over the KV cache, which grows with the number of cached tokens. Per-token latency is therefore approximately A + B·L, where A is the fixed weight cost, B·L is the attention cost, and L is the context length. Throughput, being the inverse, scales as batch / (A + B·L) — a reciprocal rather than a line.
+
+This produces two regimes. At short context (512–2048 tokens), B·L is small relative to A: the forward pass dominates and attention over the cache is negligible, so increasing the prompt length barely changes per-token cost. This is the near-constant region observed between 1024 and 2048 tokens, where the workload is weight-bound. At long context (4096–8192 tokens), B·L grows large enough to dominate, and throughput falls off approximately as 1/L; this is why doubling the prompt from 4096 to 8192 tokens nearly halves throughput (e.g., 87.7 → 54.5 tok/s for the FP16 cache). In this regime the workload is attention-bound.
+
 <img width="5343" height="2954" alt="Llama8B_Total_Energy_Ranking" src="https://github.com/user-attachments/assets/001c9a3a-2df9-4a2d-85f6-301444aaf647" />
 <img width="5340" height="2951" alt="Llama8B_Efficiency_Ranking" src="https://github.com/user-attachments/assets/279f5077-7cf2-4524-a815-0bf7b164070c" />
 <img width="4157" height="2353" alt="L4_Llama8B_throughput_vs_memory_pareto" src="https://github.com/user-attachments/assets/749e717f-a150-481f-b87d-7cd1cdeff21b" />
