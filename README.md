@@ -54,7 +54,7 @@ so the net speedup is modest. It's an Amdahl's-law ceiling: you only sped up the
 <img width="2370" height="1466" alt="throughput_speedup_vs_fp16" src="https://github.com/user-attachments/assets/0a23ecf2-8970-49b0-90d3-4b600c9a04f3" />
 <img width="2370" height="1466" alt="dynamic_efficiency_comparison" src="https://github.com/user-attachments/assets/a631fcfa-f833-4339-9908-7e2356fe99e7" />
 
-<img width="2370" height="1466" alt="memory_comparison" src="https://github.com/user-attachments/assets/c3df47f9-944d-4efd-9039-97fe76ad66d5" />
+<img width="2916" height="2054" alt="image" src="https://github.com/user-attachments/assets/d74074fa-4560-497b-8980-6acb86400869" />
 <img width="590" height="390" alt="perplexity" src="https://github.com/user-attachments/assets/409fd82b-2866-4a43-b71f-3a204bd20467" />
 <img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
 
