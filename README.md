@@ -56,7 +56,6 @@ so the net speedup is modest. It's an Amdahl's-law ceiling: you only sped up the
 
 <img width="2916" height="2054" alt="image" src="https://github.com/user-attachments/assets/d74074fa-4560-497b-8980-6acb86400869" />
 <img width="590" height="390" alt="perplexity" src="https://github.com/user-attachments/assets/409fd82b-2866-4a43-b71f-3a204bd20467" />
-<img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
 
 ### "How did you measure power, and what does 'dynamic watt' mean?" 
 
@@ -64,6 +63,9 @@ Power was sampled from the GPU's onboard sensor via NVML (NVIDIA Management Libr
 accessible programmatically through pynvml.nvmlDeviceGetPowerUsage(), which returns instantaneous board power. 
 During each inference run, a background sampler polls this value at a fixed interval and the readings are averaged over the run to produce average power (W).
 "Dynamic watt" is the average power during inference minus the idle baseline — the power the GPU draws when it's sitting with the model resident but not actively computing. Subtracting it isolates the marginal power cost of the computation itself and removes the static overhead (leakage, memory refresh, idle clock domains) that every method pays equally. 
+<img width="2370" height="1466" alt="power_comparison" src="https://github.com/user-attachments/assets/706cc7ee-5a52-4fba-acc3-d7344c802370" />
+
+
 
 <img width="913" height="321" alt="Screenshot 2026-06-09 at 9 53 35 AM" src="https://github.com/user-attachments/assets/923be551-e4e9-4c59-9d33-52352a4be17a" />
 
