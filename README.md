@@ -72,8 +72,6 @@ During each inference run, a background sampler polls this value at a fixed inte
 Quantizing weights cuts the dominant cost (loading weights every step). Quantizing the KV-cache adds a per-step dequant on a comparatively small structure, 
 so at these context lengths the overhead outweighs the bandwidth saved. It only pays off at very long contexts where the cache itself becomes the memory bottleneck.
 
-<img width="711" height="511" alt="Screenshot 2026-06-09 at 9 55 16 AM" src="https://github.com/user-attachments/assets/09e296fd-1d60-40fb-ac94-b9cd161a9d3c" />
-
 <img width="5343" height="2954" alt="Llama8B_Total_Energy_Ranking" src="https://github.com/user-attachments/assets/001c9a3a-2df9-4a2d-85f6-301444aaf647" />
 <img width="5340" height="2951" alt="Llama8B_Efficiency_Ranking" src="https://github.com/user-attachments/assets/279f5077-7cf2-4524-a815-0bf7b164070c" />
 <img width="4157" height="2353" alt="L4_Llama8B_throughput_vs_memory_pareto" src="https://github.com/user-attachments/assets/749e717f-a150-481f-b87d-7cd1cdeff21b" />
