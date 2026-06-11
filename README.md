@@ -69,7 +69,7 @@ During each inference run, a background sampler polls this value at a fixed inte
 
 <img width="913" height="321" alt="Screenshot 2026-06-09 at 9 53 35 AM" src="https://github.com/user-attachments/assets/923be551-e4e9-4c59-9d33-52352a4be17a" />
 
-### why does INT4 weights speed things up but INT4 KV-cache slows things down?
+### Why does INT4 weights speed things up but INT4 KV-cache slows things down?
 
 Quantizing weights cuts the dominant cost (loading weights every step). Quantizing the KV-cache adds a per-step dequant on a comparatively small structure, 
 so at these context lengths the overhead outweighs the bandwidth saved. It only pays off at very long contexts where the cache itself becomes the memory bottleneck.
@@ -78,6 +78,12 @@ so at these context lengths the overhead outweighs the bandwidth saved. It only 
 Decode throughput is not expected to scale linearly with prompt length. The per-token cost of autoregressive generation has two components: a fixed cost from the forward pass through the model weights, which is independent of sequence length, and an attention cost over the KV cache, which grows with the number of cached tokens. Per-token latency is therefore approximately A + B·L, where A is the fixed weight cost, B·L is the attention cost, and L is the context length. Throughput, being the inverse, scales as batch / (A + B·L) — a reciprocal rather than a line.
 
 This produces two regimes. At short context (512–2048 tokens), B·L is small relative to A: the forward pass dominates and attention over the cache is negligible, so increasing the prompt length barely changes per-token cost. This is the near-constant region observed between 1024 and 2048 tokens, where the workload is weight-bound. At long context (4096–8192 tokens), B·L grows large enough to dominate, and throughput falls off approximately as 1/L; this is why doubling the prompt from 4096 to 8192 tokens nearly halves throughput (e.g., 87.7 → 54.5 tok/s for the FP16 cache). In this regime the workload is attention-bound.
+
+### So which configuration should I actually deploy?
+
+It depends on the card and the workload, but the rules of thumb: on a modern GPU with AWQ kernel support (A100, L4), use AWQ INT4 and push batch size as high as memory allows 
+— that's where both throughput and efficiency peak. On a memory-constrained or older card like the T4, INT8 may be the only way to fit the model, and you accept the throughput hit. 
+And if you're running long contexts or large batches where the KV cache dominates memory, add KV-cache quantization on top — it's complementary to weight quantization, not a substitute.
 
 <img width="5343" height="2954" alt="Llama8B_Total_Energy_Ranking" src="https://github.com/user-attachments/assets/001c9a3a-2df9-4a2d-85f6-301444aaf647" />
 <img width="5340" height="2951" alt="Llama8B_Efficiency_Ranking" src="https://github.com/user-attachments/assets/279f5077-7cf2-4524-a815-0bf7b164070c" />
